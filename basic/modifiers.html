@@ -148,8 +148,11 @@
 </div>
 
 <div id="app">
-  <input type="text" class="form-control" v-model="text">
-  <button class="btn btn-primary mt-1">反轉字串</button>
+  <input type="text" class="form-control" @keyup.enter="reverseText" v-model="text">
+  <!-- <button class="btn btn-primary mt-1">反轉字串</button> -->
+  <!-- 按鈕改成<a>會頁面重整並往上移，或外部連結 -->
+  <!-- prevent可以阻止預先元素上的效果，比如a的連到外部連結 -->
+  <a :href="link" class="btn btn-primary mt-1" @click.prevent="reverseText">反轉字串</a>
   <div class="mt-3">
     {{ newText }}
   </div>
@@ -160,11 +163,15 @@ var app = new Vue({
   el: '#app',
   data: {
     text: '',
-    newText: ''
+    newText: '',
+    link: 'https://www.google.com.tw/'
   },
   // 請在此撰寫 JavaScript
   methods: {
     reverseText(event) {
+      console.log(event)
+      event.preventDefault();
+
       this.newText = this.text.split('').reverse().join('');
     }
   }

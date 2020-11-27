@@ -148,7 +148,18 @@
 
 
 <div id="app">
-  <input type="text">
+  {{ message }}
+  <!-- 僅插入文字 -->
+  <div v-text="message">
+    <!-- 僅插入文字包含標籤 -->
+  </div>
+  
+  <div v-html="message_2">
+    <!-- 插入文字外亦可插入標籤 -->
+  </div>
+
+  <input type="text" v-model="message">
+  <!-- 可以透過這個input調整資料內容 -->
 </div>
 
 <script>
@@ -156,9 +167,10 @@ var app = new Vue({
   el: '#app',
   // 在此建立資料內容
 
-  // data: {
-  //   message: '哈囉'
-  // }
+  data: {
+    message: '哈囉',
+    message_2: '<span>哈囉</span>'
+  }
 })
 </script> 
         </div>

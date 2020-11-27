@@ -147,15 +147,35 @@
 <div id="app">
   <div>
     你已經點擊 <button class="btn btn-outline-secondary btn-sm" @click="counter += 1">{{ counter }}</button> 下。
+    你已經點擊 <button class="btn btn-outline-secondary btn-sm" @click="counter += 1">{{ counter }}</button> 下。
+    <counter-component></counter-component>
+    <counter-component></counter-component>
+    <counter-component></counter-component>
+    <!-- 元件可以複製貼上，並且每個皆為獨立運作 -->
   </div>
 </div>
 
 <script>
 // 請在此撰寫 JavaScript
-
+//以下建立的元件'counter-component'為在html上的標籤名稱
+Vue.component('counter-component', {
+  //在新增一個元件的話，data必須要為一個function，並且回傳內容
+  data() {
+    return {
+      counter: 0,
+    }
+  },
+  //建立元件的內容
+  template: `
+    <div>
+      你已經點擊 <button class="btn btn-outline-secondary btn-sm" @click="counter += 1">{{ counter }}</button>
+    </div>
+  `,
+})
 
 var app = new Vue({
   el: '#app',
+  //在新增應用程式的話，data不需要成為一個function
   data: {
     counter: 0
   },

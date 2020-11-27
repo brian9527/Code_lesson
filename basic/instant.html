@@ -147,12 +147,32 @@
 </div>
 
 
-<div>
-
+<div id="app">
+  {{ text }}
+  <div id="app2">
+    {{ text2 }}
+    <!-- 關於巢狀建立vue，不能建立巢狀的vue，會無效 -->
+  </div>
 </div>
 
 
 <script>
+  var app = new Vue({
+    el: '#app', //也可以用class綁定，但是只能綁訂一個元素
+    data() {
+      return {
+        text: '支那賤畜',
+      }
+    },
+  })
+  var app = new Vue({
+    el: '#app2', 
+    data() {
+      return {
+        text2: '支那賤畜2',
+      }
+    },
+  })
 // var data = {
 //   text: '這是一段話'
 // }

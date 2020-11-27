@@ -148,7 +148,7 @@
   <input type="text" class="form-control" v-model="text">
   <button class="btn btn-primary mt-1">反轉字串</button>
   <div class="mt-3">
-    {{ text.split('').reverse().join('') }}
+    {{ reverseText }}
   </div>
 </div>
 
@@ -159,7 +159,20 @@ var app = new Vue({
     text: '',
     newText: ''
   },
+
+  //method與computed
+  //method式互動的函式，需要觸發才會運作，並且會修改資料
+  //computed監控資料更動，重新運算並將結果呈現在畫面上，不會修改資料只會回傳用於畫面呈現的資料
+  //效能方面：computed處理較少的資料並不修改原本資料，method處理相對較多的資料並會修改原本資料
+
   // 請在此撰寫 JavaScript
+  computed: {
+    // 做運算
+    reverseText(){
+      //reverseText這個功能的名稱，下面是計算或處理的方法，然後皆會回傳(return)到reverseText這個函式裡面
+      return this.text.split('').reverse().join('')
+    }
+  },
 });
 </script>
 
