@@ -171,11 +171,11 @@ Vue.component('counter-component', {
       你已經點擊 <button class="btn btn-outline-secondary btn-sm" @click="counter += 1">{{ counter }}</button>
     </div>
   `,
-})
+});
 
 var app = new Vue({
   el: '#app',
-  //在新增應用程式的話，data不需要成為一個function
+  //在新增應用程式的話，data可以不需要成為一個function
   data: {
     counter: 0
   },

@@ -150,40 +150,58 @@
     <div class="input-group-prepend">
       <span class="input-group-text" id="basic-addon1">待辦事項</span>
     </div>
-    <input type="text" class="form-control" placeholder="準備要做的任務">
+    <!-- <input type="text" class="form-control" placeholder="準備要做的任務" v-model="newTodo"> -->
+    <!-- 利用enter來送出資料 -->
+    <input type="text" class="form-control" placeholder="準備要做的任務" v-model="newTodo" @keyup.enter="addTodo">
     <div class="input-group-append">
-      <button class="btn btn-primary" type="button">新增</button>
+      <button class="btn btn-primary" type="button" @click="addTodo">新增</button>
     </div>
   </div>
   <div class="card text-center">
     <div class="card-header">
       <ul class="nav nav-tabs card-header-tabs">
         <li class="nav-item">
-          <a class="nav-link active" href="#">全部</a>
+          <!-- .prevent是為了不要讓A連結的特性發生也就是重新整理網頁 -->
+          <a class="nav-link" :class="{ 'active': visibility == 'all' }" @click.prevent="visibility = 'all'" href="#">全部</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link " href="#">進行中</a>
+          <a class="nav-link " :class="{ 'active': visibility == 'active' }" @click.prevent="visibility = 'active'" href="#">進行中</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">已完成</a>
+          <a class="nav-link" :class="{ 'active': visibility == 'completed' }" @click.prevent="visibility = 'completed'" href="#">已完成</a>
         </li>
       </ul>
     </div>
     <ul class="list-group list-group-flush text-left">
-      <li class="list-group-item">
-        <div class="d-flex">
+      <!-- <li class="list-group-item" v-for="(item, index) in todos" :key="index"> -->
+      <!-- <li class="list-group-item" v-for="(item, index) in filteredTodos" :key="index"> -->
+        <!-- 這是送入被過濾後的陣列內 -->
+      <li class="list-group-item" v-for="(item, index) in filteredTodos" :key="index" @dblclick="editTodo(item)">
+        <!-- 這是加入雙點擊功能 -->
+
+        <!-- <div class="d-flex"> -->
+        <div class="d-flex" v-if="item.id !== catchTodo.id">
+        <!-- 接下來要判斷顯示出雙點擊後切換成input已修改資料 -->
           <div class="form-check">
-            <input type="checkbox" class="form-check-input" id="a1">
-            <label class="form-check-label" for="a1">
-              Cras justo odio
+            <input type="checkbox" class="form-check-input" v-model="item.completed" :id="item.id">
+            <!-- <label class="form-check-label" :for="item.id"> -->
+            <label class="form-check-label" :class="{ 'completed': item.completed }" :for="item.id">
+              {{ item.title }}
             </label>
           </div>
-          <button type="button" class="close ml-auto" aria-label="Close">
+          <button type="button" class="close ml-auto" aria-label="Close" @click="removeTodo(item)">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
+        <!-- <input type="text" class="form-control"> -->
+        <input type="text" class="form-control" 
+          @keyup.esc="cancelEdit()"
+          @keyup.enter="doneEdit(item)"
+          v-model="catchTitle"
+          v-if="item.id === catchTodo.id">
+          <!-- 按下Esc即可取消編輯，不過指標要在input裡面 -->
       </li>
-      <li class="list-group-item">
+      <!-- <li class="list-group-item">
         <div class="d-flex">
           <div class="form-check">
             <input type="checkbox" class="form-check-input" id="a1">
@@ -195,10 +213,10 @@
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-      </li>
-      <li class="list-group-item">
+      </li> -->
+      <!-- <li class="list-group-item">
         <input type="text" class="form-control">
-      </li>
+      </li> -->
     </ul>
     <div class="card-footer d-flex justify-content-between">
       <span>還有 3 筆任務未完成</span>
@@ -210,7 +228,111 @@
 <script>
 var app = new Vue({
   el: '#app',
-  data: {},
+  data() {
+    return {
+      newTodo: '',
+      todos: [
+        {
+          id: '567',
+          title: '123',
+          completed: false,
+        }
+      ],
+      //目前呈現哪個頁簽
+      visibility: 'all',
+      //暫時存放要編輯的東西
+      catchTodo: {},
+      //站存編輯東西的title
+      catchTitle: '',
+    }
+  },
+  methods: {
+    addTodo(){
+      //暫時儲存newTodo所儲存的內容
+      //trim()是用於消除空白
+      let value = this.newTodo.trim();
+      //需要一個隨機的ID，時間轉為數字的格式
+      let timestamp = Math.floor(Date.now());
+      console.log(value, timestamp);
+      // 如果沒有內容的話是無法新增
+      if(!value){
+        return;
+      }
+      this.todos.push(
+        {
+          //把資料寫進去
+          id: timestamp,
+          title: value,
+          completed: false,
+        }
+      );
+      //清除input裡面的東西
+      this.newTodo = '';
+    },
+    removeTodo(todo){
+      //由於無法在點下去的時候知道是哪個被刪除，所以要傳入被刪除相關的參數
+      // let newIndex = '';
+      // let vm = this;
+      // vm.todos.forEach((item, key) => {
+      //   if (todo.id === item.id) {
+      //     newIndex = key
+      //   }
+      // })
+      // this.todos.splice(newIndex, 1)
+      //更精簡的寫法
+      let vm = this;
+      let newIndex = vm.todos.findIndex((item, key) => {
+        //return為ture的結果，finIndex是找索引的方式，會把回傳為true的索引位置存到前面的變數也就是newIndex
+        return todo.id === item.id;
+      })
+      this.todos.splice(newIndex, 1)
+    },
+    editTodo(item){
+      //取得item
+      console.log(item);
+      this.catchTodo = item;
+      this.catchTitle = item.title;
+    },
+    cancelEdit(){
+      this.catchTodo = {};
+    },
+    doneEdit(item){
+      item.title = this.catchTitle;
+      this.catchTitle = "";
+      this.catchTodo = {};
+    },
+  },
+  computed: {
+    //利用computed來寫過濾的功能
+    filteredTodos(){
+      if(this.visibility == 'all'){
+        return this.todos;
+      } else if (this.visibility == 'active') {
+        //回傳todos裡面未完成的內容
+        let newTodos = [];
+        //帶入item為一個一個的todo
+        this.todos.forEach((item) => {
+          if (!item.completed) {
+            //假設item裡面的completed為未完成
+            newTodos.push(item);
+          }
+        })
+        return newTodos;
+      } else if (this.visibility == 'completed') {
+        //回傳todos裡面未完成的內容
+        let newTodos = [];
+        //帶入item為一個一個的todo
+        this.todos.forEach((item) => {
+          if (item.completed) {
+            //假設item裡面的completed為未完成
+            newTodos.push(item);
+          }
+        })
+        return newTodos;
+      }
+      return [];
+    }
+  },
 });
 </script>
 
