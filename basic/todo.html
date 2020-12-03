@@ -219,8 +219,8 @@
       </li> -->
     </ul>
     <div class="card-footer d-flex justify-content-between">
-      <span>還有 3 筆任務未完成</span>
-      <a href="#">清除所有任務</a>
+      <span>還有 {{ todos.length }} 筆任務未完成</span>
+      <a href="#" @click="clearAll">清除所有任務</a>
     </div>
   </div>
 </div>
@@ -301,6 +301,9 @@ var app = new Vue({
       this.catchTitle = "";
       this.catchTodo = {};
     },
+    clearAll(){
+      this.todos = [];
+    }
   },
   computed: {
     //利用computed來寫過濾的功能
