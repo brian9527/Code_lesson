@@ -113,17 +113,17 @@
   <p>使用 Computed 來過濾資料。</p>
   <input type="text" class="form-control" v-model="filterText">
   <ul>
-    <li v-for="(item, key) in arrayData" :key="item.age">
+    <li v-for="(item, key) in filterArray" :key="item.age">
       {{ key }} - {{ item.name }} {{ item.age }} 歲 <input type="text">
     </li>
   </ul> 
   <p>使用 Computed 來呈現時間格式。</p>
-  <p></p>
+  <p>{{ formatTime }}</p>
   <h4>Watch</h4>
   <p>使用 trigger 來觸發旋轉 box、並在三秒後改變回來</p>
   <div class="box" :class="{'rotate': trigger }"></div>
   <hr>
-  <button class="btn btn-outline-primary">Counter</button>
+  <button class="btn btn-outline-primary" @click="trigger = true">Counter</button>
 </div>
 
 <script>
@@ -147,6 +147,44 @@ var app = new Vue({
     filterText: '',
     trigger: false,
     newDate: 0
+  },
+  computed: {
+    //製作輸入過濾功能
+    filterArray(){
+      let vm = this;
+      //回傳過濾後的資料vm.arrayData.filter()
+      return vm.arrayData.filter(
+        //item為每一個arrayData裡面的資料，依照資料的數量跑幾次
+        (item) => {
+          //filterText為input的欄位
+          return item.name.match(vm.filterText)
+        }
+      )
+    },
+    formatTime(){
+      console.log(this.newDate)
+      var dates = new Date(this.newDate * 1000);
+      var year = dates.getFullYear();
+      var month = dates.getMonth() + 1;
+      var date = dates.getDate();
+      var hours = dates.getHours();
+      var minutes = dates.getMinutes();
+      var seconds = dates.getSeconds();
+      return `${year}/${month}/${date} ${hours}:${minutes}:${seconds}`
+    }
+  },
+  watch: {
+    trigger: function () {
+      let vm = this;
+      setTimeout(
+        () => {
+          vm.trigger = false
+        }, 3000
+      );
+    }
+  },
+  mounted() {
+    this.newDate = Math.floor(Date.now() / 1000);
   },
 
   // 解答

@@ -153,6 +153,10 @@
     <span v-else>Show child</span>
   </button>
   <hr>
+  <!-- <keep-alive>標籤，正常vue生命週期到後面會將資料銷毀，如果需保留當下資料(輸入內容)，則可再輸入的父層添加這個標籤，資料將不會被銷毀，而保存在vue實體內。這個標籤會觸發vue產生actived hook。 -->
+  <!-- <keep-alive>
+    <app-child v-if="isShowing"></app-child>
+  </keep-alive> -->
   <keep-alive>
     <app-child v-if="isShowing"></app-child>
   </keep-alive>
@@ -173,6 +177,7 @@ const Child = {
       text: 'Vue data 資料狀態'
     }
   },
+  // 以下的生命週期都稱為hook
   beforeCreate() {
     console.log(`beforeCreate! ${this.text}`);
   }, 
